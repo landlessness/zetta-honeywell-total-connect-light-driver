@@ -22,7 +22,7 @@ HoneywellTotalConnectLightScout.prototype.init = function(next) {
     for (i=0; i < lightDevices.length; i++) {
       var lightDevice = lightDevices[i];
       (function(lightDevice){
-        var query = self.server.where({type: 'light', switchID: lightDevice.SwitchID, deviceID: lightDevice.DeviceID});
+        var query = self.server.where({type: 'light', SwitchID: lightDevice.SwitchID, DeviceID: lightDevice.DeviceID});
         self.server.find(query, function(err, results) {
           if (results[0]) {
             self.provision(results[0], HoneywellTotalConnectLight, honeywellSoap, honeywellAutomation, lightDevice);

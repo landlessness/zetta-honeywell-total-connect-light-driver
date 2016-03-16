@@ -10,15 +10,15 @@ var HoneywellTotalConnectLight = module.exports = function() {
   this._automation = arguments[1];
 
   var device = arguments[2];
-  this.deviceID = device.DeviceID;
-  this.switchID = device.SwitchID;
-  this.switchName = device.SwitchName;
-  this.switchIndex = device.SwitchIndex;
-  this.switchType = device.SwitchType;
-  this.switchState = device.SwitchState;
-  this.switchLevel = device.SwitchLevel;
-  this.switchIconID = device.SwitchIconID;
-  this.deviceStatusID = device.DeviceStatusID;
+  this.DeviceID = device.DeviceID;
+  this.SwitchID = device.SwitchID;
+  this.SwitchName = device.SwitchName;
+  this.SwitchIndex = device.SwitchIndex;
+  this.SwitchType = device.SwitchType;
+  this.SwitchState = device.SwitchState;
+  this.SwitchLevel = device.SwitchLevel;
+  this.SwitchIconID = device.SwitchIconID;
+  this.DeviceStatusID = device.DeviceStatusID;
 
   this._suppressUpdates === false;
 };
@@ -28,7 +28,7 @@ util.inherits(HoneywellTotalConnectLight, Device);
 HoneywellTotalConnectLight.prototype.init = function(config) {
 
   config
-    .name(this.deviceName)
+    .name(this.DeviceName)
     .state('on')
     .type('light')
     .when('off', {allow: ['turn-on', 'update-state']})
@@ -55,10 +55,10 @@ HoneywellTotalConnectLight.prototype._subscribeToAutomationDataStream = function
     console.log('_subscribeToAutomationDataStream: automationData.AutomationSwitch.SwitchInfo: ' + util.inspect(automationData.AutomationSwitch.SwitchInfo));
     var thisLight = automationData.AutomationSwitch.SwitchInfo.filter(function(device) {
       console.log('device.DeviceID: ' + device.DeviceID);
-      console.log('self.deviceID: ' +self.deviceID);
+      console.log('self.DeviceID: ' +self.DeviceID);
       console.log('device.SwitchID: ' +device.SwitchID);
-      console.log('self.switchID: ' +self.switchID);
-      return (device.DeviceID === self.deviceID && device.SwitchID === self.switchID);
+      console.log('self.SwitchID: ' +self.SwitchID);
+      return (device.DeviceID === self.DeviceID && device.SwitchID === self.SwitchID);
     });
     console.log('_subscribeToAutomationDataStream: thisLight[0]: ' + util.inspect(thisLight));
     self._setProperties(thisLight[0]);
@@ -67,14 +67,14 @@ HoneywellTotalConnectLight.prototype._subscribeToAutomationDataStream = function
 
 HoneywellTotalConnectLight.prototype._setProperties = function(switchInfo) {
   console.log('_setProperties: ' + util.inspect(switchInfo));
-  this.switchName = switchInfo.SwitchName;
-  this.switchIndex = switchInfo.SwitchIndex;
-  this.switchType = switchInfo.SwitchType;
-  this.switchState = switchInfo.SwitchState;
-  this.switchLevel = switchInfo.SwitchLevel;
-  this.switchIconID = switchInfo.SwitchIconID;
-  this.deviceStatusID = switchInfo.DeviceStatusID;
-  this._setSwitchState(this.switchState);
+  this.SwitchName = switchInfo.SwitchName;
+  this.SwitchIndex = switchInfo.SwitchIndex;
+  this.SwitchType = switchInfo.SwitchType;
+  this.SwitchState = switchInfo.SwitchState;
+  this.SwitchLevel = switchInfo.SwitchLevel;
+  this.SwitchIconID = switchInfo.SwitchIconID;
+  this.DeviceStatusID = switchInfo.DeviceStatusID;
+  this._setSwitchState(this.SwitchState);
 }
 
 HoneywellTotalConnectLight.prototype._setSwitchState = function(switchState) {
@@ -120,8 +120,8 @@ HoneywellTotalConnectLight.prototype.turnOn = function(cb) {
 
   this._soap._client.ControlASwitch({
     SessionID: this._soap._sessionID,
-    DeviceID: this.deviceID,
-    SwitchID: this.switchID,
+    DeviceID: this.DeviceID,
+    SwitchID: this.SwitchID,
     SwitchAction: 1
   }, function(err, result, raw, soapHeader) {
     // TODO: handle err
@@ -129,14 +129,14 @@ HoneywellTotalConnectLight.prototype.turnOn = function(cb) {
     if (result.ControlASwitchResult.ResultCode === 0) {
       self.state = 'on';
       cb();
-      this._suppressUpdates = false;
+      self._suppressUpdates = false;
     } else if (result.ArmSecuritySystemResult.ResultCode > 0) {
       //TODO: handle err
     } else {
       // log an err?
       self.state = previousState;
       cb();
-      this._suppressUpdates = false;
+      self._suppressUpdates = false;
       console.log('turnOn: ERROR: result.ArmSecuritySystemResult.ResultCode: ' + result.ArmSecuritySystemResult.ResultCode);
     }
   });
@@ -156,8 +156,8 @@ HoneywellTotalConnectLight.prototype.turnOff = function(cb) {
 
   this._soap._client.ControlASwitch({
     SessionID: this._soap._sessionID,
-    DeviceID: this.deviceID,
-    SwitchID: this.switchID,
+    DeviceID: this.DeviceID,
+    SwitchID: this.SwitchID,
     SwitchAction: 0
   }, function(err, result, raw, soapHeader) {
     // TODO: handle err
@@ -165,14 +165,14 @@ HoneywellTotalConnectLight.prototype.turnOff = function(cb) {
     if (result.ControlASwitchResult.ResultCode === 0) {
       self.state = 'off';
       cb();
-      this._suppressUpdates = false;
+      self._suppressUpdates = false;
     } else if (result.ArmSecuritySystemResult.ResultCode > 0) {
       //TODO: handle err
     } else {
       // log an err?
       self.state = previousState;
       cb();
-      this._suppressUpdates = false;
+      self._suppressUpdates = false;
       console.log('turnOff: ERROR: result.ArmSecuritySystemResult.ResultCode: ' + result.ArmSecuritySystemResult.ResultCode);
     }
   });
