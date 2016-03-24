@@ -16,18 +16,18 @@ HoneywellTotalConnectLightScout.prototype.init = function(next) {
   var self = this;
   
   this.server.observe([automationQuery, soapQuery], function(honeywellAutomation, honeywellSoap) {
-    console.log('AutomationData HoneywellTotalConnectLightScout init: ' + util.inspect(honeywellAutomation.automationData));
-    console.log('AutomationData AutomationSwitch HoneywellTotalConnectLightScout init: ' + util.inspect(honeywellAutomation.automationData.AutomationSwitch.SwitchInfo));
-    var lightDevices = honeywellAutomation.automationData.AutomationSwitch.SwitchInfo;
+    console.log('AutomationData HoneywellTotalConnectLightScout init: ' + util.inspect(honeywellAutomation.AutomationData));
+    console.log('AutomationData AutomationSwitch HoneywellTotalConnectLightScout init: ' + util.inspect(honeywellAutomation.AutomationData.AutomationSwitch.SwitchInfo));
+    var lightDevices = honeywellAutomation.AutomationData.AutomationSwitch.SwitchInfo;
     for (i=0; i < lightDevices.length; i++) {
       var lightDevice = lightDevices[i];
       (function(lightDevice){
         var query = self.server.where({type: 'light', SwitchID: lightDevice.SwitchID, DeviceID: lightDevice.DeviceID});
         self.server.find(query, function(err, results) {
           if (results[0]) {
-            self.provision(results[0], HoneywellTotalConnectLight, honeywellSoap, honeywellAutomation, lightDevice);
+            self.provision(results[0], HoneywellTotalConnectLight, honeywellSoap, lightDevice, honeywellAutomation);
           } else {
-            self.discover(HoneywellTotalConnectLight, honeywellSoap, honeywellAutomation, lightDevice);
+            self.discover(HoneywellTotalConnectLight, honeywellSoap, lightDevice, honeywellAutomation);
           }
         });
       })(lightDevice);

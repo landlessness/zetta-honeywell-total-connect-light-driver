@@ -1,16 +1,14 @@
-var Device = require('zetta-device');
+var HoneywellDevice = require('zetta-honeywell-total-connect-driver');
 var util = require('util');
 
 var TIMEOUT = 2000;
 var FAST_TIMEOUT = 500;
 
 var HoneywellTotalConnectLight = module.exports = function() {
-  Device.call(this);
-  this._soap = arguments[0];
-  this._automation = arguments[1];
+  HoneywellDevice.call(this, arguments[0], arguments[1]);
+  this._automation = arguments[2];
 
-  var device = arguments[2];
-  this.DeviceID = device.DeviceID;
+  var device = arguments[1];
   this.SwitchID = device.SwitchID;
   this.SwitchName = device.SwitchName;
   this.SwitchIndex = device.SwitchIndex;
@@ -22,7 +20,7 @@ var HoneywellTotalConnectLight = module.exports = function() {
 
   this._suppressUpdates === false;
 };
-util.inherits(HoneywellTotalConnectLight, Device);
+util.inherits(HoneywellTotalConnectLight, HoneywellDevice);
 
 // TODO: check the actual status of the panel then set current state
 HoneywellTotalConnectLight.prototype.init = function(config) {
@@ -46,22 +44,24 @@ HoneywellTotalConnectLight.prototype.init = function(config) {
 
 HoneywellTotalConnectLight.prototype._subscribeToAutomationDataStream = function() {
   var self = this;
-  var automationDataStream = this._automation.createReadStream('automationData');
+  var automationDataStream = this._automation.createReadStream('AutomationData');
   
   automationDataStream.on('data', function(msg) {
-    var automationData = msg.data;
-    console.log('_subscribeToAutomationDataStream: ' + util.inspect(automationData));
-    console.log('_subscribeToAutomationDataStream: automationData.AutomationSwitch: ' + util.inspect(automationData.AutomationSwitch));
-    console.log('_subscribeToAutomationDataStream: automationData.AutomationSwitch.SwitchInfo: ' + util.inspect(automationData.AutomationSwitch.SwitchInfo));
-    var thisLight = automationData.AutomationSwitch.SwitchInfo.filter(function(device) {
-      console.log('device.DeviceID: ' + device.DeviceID);
-      console.log('self.DeviceID: ' +self.DeviceID);
-      console.log('device.SwitchID: ' +device.SwitchID);
-      console.log('self.SwitchID: ' +self.SwitchID);
-      return (device.DeviceID === self.DeviceID && device.SwitchID === self.SwitchID);
-    });
-    console.log('_subscribeToAutomationDataStream: thisLight[0]: ' + util.inspect(thisLight));
-    self._setProperties(thisLight[0]);
+    var AutomationData = msg.data;
+    console.log('_subscribeToAutomationDataStream: ' + util.inspect(AutomationData));
+    if (AutomationData.AutomationSwitch) {
+      console.log('_subscribeToAutomationDataStream: AutomationData.AutomationSwitch: ' + util.inspect(AutomationData.AutomationSwitch));
+      console.log('_subscribeToAutomationDataStream: AutomationData.AutomationSwitch.SwitchInfo: ' + util.inspect(AutomationData.AutomationSwitch.SwitchInfo));
+      var thisLight = AutomationData.AutomationSwitch.SwitchInfo.filter(function(device) {
+        console.log('device.DeviceID: ' + device.DeviceID);
+        console.log('self.DeviceID: ' +self.DeviceID);
+        console.log('device.SwitchID: ' +device.SwitchID);
+        console.log('self.SwitchID: ' +self.SwitchID);
+        return (device.DeviceID === self.DeviceID && device.SwitchID === self.SwitchID);
+      });
+      console.log('_subscribeToAutomationDataStream: thisLight[0]: ' + util.inspect(thisLight));
+      self._setProperties(thisLight[0]);
+    }
   });
 }
 

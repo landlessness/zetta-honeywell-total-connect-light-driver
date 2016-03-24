@@ -1,6 +1,6 @@
 var zetta = require('zetta');
-var HoneywellTotalConnectSOAP = require('../../zetta-honeywell-total-connect-soap-driver/index');
-var HoneywellTotalConnectAutomation = require('../../zetta-honeywell-total-connect-automation-driver/index');
+var HoneywellTotalConnectSOAP = require('zetta-honeywell-total-connect-soap-driver');
+var HoneywellTotalConnectAutomation = require('zetta-honeywell-total-connect-automation-driver');
 var HoneywellTotalConnectLight = require('../index');
 var style = require('./apps/style');
 
