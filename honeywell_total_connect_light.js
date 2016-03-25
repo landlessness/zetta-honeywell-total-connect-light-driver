@@ -166,7 +166,7 @@ HoneywellTotalConnectLight.prototype.turnOff = function(cb) {
       self.state = 'off';
       cb();
       self._suppressUpdates = false;
-    } else if (result.ArmSecuritySystemResult.ResultCode > 0) {
+    } else if (result.ControlASwitchResult.ResultCode > 0) {
       //TODO: handle err
     } else {
       // log an err?
